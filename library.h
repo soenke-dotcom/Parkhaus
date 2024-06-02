@@ -1,0 +1,6 @@
+#ifndef PARKHAUSAUTO_LIBRARY_H
+#define PARKHAUSAUTO_LIBRARY_H
+
+void hello(void);
+
+#endif //PARKHAUSAUTO_LIBRARY_H

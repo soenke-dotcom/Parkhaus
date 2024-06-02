@@ -51,12 +51,12 @@ int main() {
     //AusgabeThread erzeugen
     pthread_create(&out, NULL, ausgabe, NULL);
 
-    //AutoThread erzeugen
+    //AutoThreads erzeugen
     for (int i = 0; i < CARS; i++) {
 
         pthread_create(&pts[i], NULL, car, NULL);
     }
-    //AufAuto Threads warten
+    //Auf AutoThreads warten
     for (int i = 0; i < CARS; i++) {
 
         pthread_join(pts[i], NULL);
