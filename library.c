@@ -4,21 +4,24 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <semaphore.h>
 #include <unistd.h>
 
 #define CARS 500
 
+pthread_mutex_t my_mutex = PTHREAD_MUTEX_INITIALIZER;
+sem_t sema;
 pthread_t pts[CARS];
 pthread_t out;
-int slots [100];
 int currentCars = 0;
 int allCarsDone = 1;
 
 //AusgabeThread
 void * ausgabe() {
 
-    //Beendet wenn jedes Autothread beednet
+    //Beendet wenn jeder Autothread beendet
     while(allCarsDone) {
+
         printf("Belegte Plätze: %d \n Freie Plätze: %d \n", currentCars, 100 - currentCars);
         sleep(1);
     }
@@ -33,21 +36,31 @@ void * car() {
     while (pthread_self() != pts[i]) {
         i++;
     }
-    //warten falls voll
-    while(currentCars >= 100) {
 
+    //warten falls voll
+    sem_wait(&sema);
+    while(currentCars >= 100) {
+        sem_post(&sema);
+        sleep(1);
     }
-    //slots[i / 5] = 1;
+
+    sem_wait(&sema);
     currentCars++;
+    sem_post(&sema);
+
     sleep((rand() % 4) + 1);
-    //slots[i / 5] = 0;
+
+    sem_wait(&sema);
     currentCars--;
+    sem_post(&sema);
+    //pthread_mutex_unlock(&my_mutex);
 
     pthread_exit(NULL);
 }
 
 int main() {
 
+    sem_init(&sema, 0, 0);
     //AusgabeThread erzeugen
     pthread_create(&out, NULL, ausgabe, NULL);
 
@@ -62,4 +75,5 @@ int main() {
         pthread_join(pts[i], NULL);
     }
     allCarsDone = 0;
+    pthread_join(out, NULL);
 }
