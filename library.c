@@ -22,7 +22,9 @@ void * ausgabe() {
     //Beendet wenn jeder Autothread beendet
     while(allCarsDone) {
 
+        sem_wait(&sema);
         printf("Belegte Plätze: %d \n Freie Plätze: %d \n", currentCars, 100 - currentCars);
+        sem_post(&sema);
         sleep(1);
     }
     pthread_exit(NULL);
@@ -53,14 +55,13 @@ void * car() {
     sem_wait(&sema);
     currentCars--;
     sem_post(&sema);
-    //pthread_mutex_unlock(&my_mutex);
 
     pthread_exit(NULL);
 }
 
 int main() {
 
-    sem_init(&sema, 0, 0);
+    sem_init(&sema, 0, 1);
     //AusgabeThread erzeugen
     pthread_create(&out, NULL, ausgabe, NULL);
 
